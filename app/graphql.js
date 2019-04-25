@@ -30,6 +30,7 @@ export const client = new ApolloClient({
 export const GET_APPROVED_RECIPES = gql`
   query {
     allRecipes {
+      id
       approvedRevision {
         id
         created
