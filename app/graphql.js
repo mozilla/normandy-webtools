@@ -28,23 +28,17 @@ export const client = new ApolloClient({
 });
 
 export const GET_APPROVED_RECIPES = gql`
-  query($recipeId: Int!) {
-    recipe(id: $recipeId) {
-      revisions {
+  query {
+    allRecipes {
+      approvedRevision {
         id
         created
-        updated
-        user {
-          email
-        }
         name
         action {
           name
         }
-        argumentsJson
         extraFilterExpression
         filterObjectJson
-        identiconSeed
       }
     }
   }

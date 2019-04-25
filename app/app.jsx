@@ -1,8 +1,18 @@
-const React = require('react');
-const ReactDOM = require('react-dom');
+import React from "react";
+import ReactDOM from "react-dom";
+import { ApolloProvider } from 'react-apollo-hooks';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 
-function App() {
-  return <h1>Hi!</h1>
-}
+import { client as graphqlClient } from "./graphql.js";
+import NamespaceViewer from "./NamespaceViewer.jsx";
 
-ReactDOM.render(<App/>, document.getElementById('main'));
+ReactDOM.render(
+  <ApolloProvider client={graphqlClient}>
+    <Router>
+      <Route path="/">
+        <NamespaceViewer />
+      </Route>
+    </Router>
+  </ApolloProvider>,
+  document.querySelector('#main'),
+);
