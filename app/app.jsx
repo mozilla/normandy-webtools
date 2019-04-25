@@ -1,7 +1,8 @@
 const React = require('react');
 const ReactDOM = require('react-dom');
 
-/* Import Components */
-const HelloWorld = require('./components/HelloWorld');
+function App() {
+  return <h1>Hi!</h1>
+}
 
-ReactDOM.render(<HelloWorld/>, document.getElementById('main'));
+ReactDOM.render(<App/>, document.getElementById('main'));
