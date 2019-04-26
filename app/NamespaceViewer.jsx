@@ -6,7 +6,9 @@ import { GET_APPROVED_RECIPES } from "./graphql.js";
 export default function NamespaceViewer() {
   const { loading, error, data } = useQuery(GET_APPROVED_RECIPES);
   
-  let recipes = null
+  let recipes = null;
+  let recipesByNamespace = new Map();
+  
   if (!error && !loading && data) {
     console.log(data);
     recipes = data.allRecipes
@@ -20,12 +22,31 @@ export default function NamespaceViewer() {
           console.log("Warning: Recipe doesn't have parsable filter object json", err, r);
         }
         return r;
-      });
+      })
+      .filter(r => r.approvedRevision.filterObject && r.approvedRevision.filterObject.some(f => f.type == "bucketSample"))
+    ;
+    
+    
+    for (const recipe of recipes) {
+      const bucketSample = recipe.approvedRevision.filterObject.find(f => f.type == "bucketSample");
+      const namespace = bucketSample.input
+        .filter(i => i != "normandy.userId")
+        .map(i => i == "normandy.recipe.id" ? recipe.id : i)
+        .join("::");
+      if (!recipesByNamespace.has(namespace)) {
+        recipesByNamespace.set(namespace, []);
+      }
+      recipesByNamespace.get(namespace).push(recipe);
+    }
   }
   
-  return (<pre>
-    <code>
-      {recipes && JSON.stringify(recipes, null, 4)}
-    </code>
-  </pre>);
+  
+  return (
+    <div>
+      <h1>Namespaces:</h1>
+      <ul>
+        {Array.from(recipesByNamespace.keys()).map(ns => <li>{JSON.stringify(ns)}</li>)}
+      </ul>
+    </div>
+  );
 }
