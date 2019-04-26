@@ -45,7 +45,7 @@ export default function NamespaceViewer() {
     <div>
       <h1>Namespaces:</h1>
       <ul>
-        {Array.from(recipesByNamespace.keys()).map(ns => <li>{JSON.stringify(ns)}</li>)}
+        {Array.from(recipesByNamespace.keys()).map(ns => <li>{ns}</li>)}
       </ul>
     </div>
   );
