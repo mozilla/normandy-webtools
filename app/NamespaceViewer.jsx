@@ -150,10 +150,8 @@ function NamespaceTable({ recipes }) {
       let collisions = Array.from(takenBuckets.queryInterval(potentialLow, potentialHigh));
       if (collisions.length == 0) {
         newStart = potentialLow;
-        console.log(`Found range at ${newStart}`);
         break;
-      } else {
-        console.log(`${collisions.length} collisions:`, collisions);
+
       }
     }
   }
@@ -162,7 +160,7 @@ function NamespaceTable({ recipes }) {
     <>
       <h2>New Bucket Range</h2>
       <label>
-        Size of new bucket
+        Number of buckets needed:{' '}
         <input
           type="number"
           defaultValue={newBucketSize}
@@ -177,7 +175,16 @@ function NamespaceTable({ recipes }) {
       <div>
         {newStart == null
           ?  "No slot found"
-          : `Slot starting at ${newStart} is available`
+          : <>
+            <span>Slot starting at {newStart} is available</span>
+            <pre><code>{JSON.stringify({
+              type: "bucketSample",
+              start: newStart,
+              count: newBucketSize,
+              total: expectedTotal,
+              input: ["normandy.userId", namespace],
+            }, null, 4)}</code></pre>
+          </>
         }
       </div>
         
