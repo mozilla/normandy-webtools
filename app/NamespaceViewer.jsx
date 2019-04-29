@@ -36,6 +36,7 @@ export default function NamespaceViewer() {
         patchRevision(r.approvedRevision);
         patchRevision(r.latestRevision);
         r.currentRevision = r.approvedRevision || r.latestRevision;
+        r._meta = {};
         return r;
       })
       .filter(r => r.currentRevision.filterObject && getFilter(r, "bucketSample"))
@@ -88,22 +89,31 @@ function NamespaceTable({ recipes }) {
   let displayRows = [];
   
   let expectedStart = 0;
+  let expectedTotal = recipes.length > 0 ? getFilter(recipes[0], "bucketSample").total: 1000;
+  
   for (const recipe of recipes) {
     let bucketFilter = getFilter(recipe, "bucketSample");
-    if (bucketFilter.start != expectedStart) {
+    if (bucketFilter.start > expectedStart) {
       displayRows.push(
         <tr className="namespace-gap">
           <td>GAP</td>
           <td className="number">{expectedStart}</td>
-          <td className="number">{expectedStart - bucketFilter.start}</td>
-          <td className="number">{bucketFilter.count}</td>
+          <td className="number">{bucketFilter.start - expectedStart}</td>
+          <td className="number">{expectedTotal}</td>
           <td></td>
         </tr>
       );
     }
+    
+    if (bucketFilter.total != expectedTotal) {
+      recipe._meta.totalMismatch = {expectedTotal};
+    }
+    
     expectedStart = bucketFilter.start + bucketFilter.count;
     displayRows.push(<RecipeRow key={recipe.id} recipe={recipe} />);
   }
+  
+  if )expectedStart < expectedTotal)
   
   return (
     <>
