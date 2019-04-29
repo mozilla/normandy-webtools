@@ -30,7 +30,7 @@ export default function NamespaceViewer() {
     ;
     
     for (const recipe of recipes) {
-      const bucketSample = recipe.approvedRevision.filterObject.find(f => f.type == "bucketSample");
+      const bucketSample = getFilter(recipe, "bucketSample");
       let namespace = bucketSample.input
         .filter(i => i != "normandy.userId")
         .map(i => i == "normandy.recipe.id" ? recipe.id : i)
@@ -50,20 +50,58 @@ export default function NamespaceViewer() {
   }
   
   const namespaceRecipes = recipesByNamespace.get(selectedNamespace) || [];
-  console.log(selectedNamespace
+  console.log({selectedNamespace, recipesByNamespace});
   
   return (
     <div>
       <h1>
         Namespace
-        <select value={selectedNamespace}>
+        <select value={selectedNamespace} onChange={ev => setSelectedNamespace(ev.target.value)}>
+          <option value={undefined} key="undefined">---</option>
           {Array.from(recipesByNamespace.keys()).map(ns => <option key={ns} value={ns}>{ns}</option>)}
         </select>
       </h1>
       <h2>{namespaceRecipes.length} Recipe{namespaceRecipes.length != 1 ? "s" : ""}</h2>
-      <ul>
-        {namespaceRecipes.map(recipe => <li>{recipe.id} - {recipe.currentRevision.name}</li>)}
+      <table>
+        <thead>
+          <tr>ID</tr>
+          <tr>Name</tr>
+          <tr>First Bucket</tr>
+          <tr>Number of Buckets</tr>
+          <tr>Total Buckets</tr>
+        </thead>
+        <tbody>
+          {namespaceRecipes.map(recipe => <RecipeRow recipe={recipe} />)}
+        </tbody>
       </ul>
     </div>
+  );
+}
+
+function getFilter(recipe, type) {
+  return recipe.approvedRevision.filterObject.find(f => f.type == type);
+}
+
+function RecipeRow({ recipe }) {
+  let bucketFilter = getFilter(recipe, "bucketSample");
+  
+  return (
+    <tr>
+      <td>
+        {recipe.id}
+      </td>
+      <td>
+        {recipe.approvedRevision.name};
+      </td>
+      <td>
+        {bucketFilter.start}
+      </td>
+      <td>
+        {bucketFilter.count}
+      </td>
+      <td>
+        {bucketFilter.total}
+      </td>
+    </li>
   );
 }
