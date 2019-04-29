@@ -59,12 +59,6 @@ export default function NamespaceViewer() {
   
   const namespaceRecipes = recipesByNamespace.get(selectedNamespace) || [];
   
-  namespaceRecipes.sort((a, b) => {
-    const filterA = getFilter(a, "bucketSample");
-    const filterB = getFilter(b, "bucketSample");
-    return filterA.start - filterB.start;
-  });
-  
   return (
     <div>
       <h1>
@@ -74,7 +68,46 @@ export default function NamespaceViewer() {
           {Array.from(recipesByNamespace.keys()).map(ns => <option key={ns} value={ns}>{ns}</option>)}
         </select>
       </h1>
-      <h2>{namespaceRecipes.length} Recipe{namespaceRecipes.length != 1 ? "s" : ""}</h2>
+      <NamespaceTable recipes={namespaceRecipes} />
+    </div>
+  );
+}
+
+function getFilter(recipe, type) {
+  return recipe.currentRevision.filterObject.find(f => f.type == type);
+}
+
+function NamespaceTable({ recipes }) {
+  recipes = [...recipes];  
+  recipes.sort((a, b) => {
+    const filterA = getFilter(a, "bucketSample");
+    const filterB = getFilter(b, "bucketSample");
+    return filterA.start - filterB.start;
+  });
+  
+  let displayRows = [];
+  
+  let expectedStart = 0;
+  for (const recipe of recipes) {
+    let bucketFilter = getFilter(recipe, "bucketSample");
+    if (bucketFilter.start != expectedStart) {
+      displayRows.push(
+        <tr className="namespace-gap">
+          <td>GAP</td>
+          <td className="number">{expectedStart}</td>
+          <td className="number">{expectedStart - bucketFilter.start}</td>
+          <td className="number">{bucketFilter.count}</td>
+          <td></td>
+        </tr>
+      );
+    }
+    expectedStart = bucketFilter.start + bucketFilter.count;
+    displayRows.push(<RecipeRow key={recipe.id} recipe={recipe} />);
+  }
+  
+  return (
+    <>
+      <h2>{recipes.length} Recipe{recipes.length != 1 ? "s" : ""}</h2>
       <table className="namespace-table">
         <thead>
           <tr>
@@ -89,15 +122,11 @@ export default function NamespaceViewer() {
           </tr>
         </thead>
         <tbody>
-          {namespaceRecipes.map(recipe => <RecipeRow key={recipe.id} recipe={recipe} />)}
+          {displayRows}
         </tbody>
       </table>
-    </div>
+    </>
   );
-}
-
-function getFilter(recipe, type) {
-  return recipe.currentRevision.filterObject.find(f => f.type == type);
 }
 
 function RecipeRow({ recipe }) {
@@ -106,8 +135,13 @@ function RecipeRow({ recipe }) {
   return (
     <tr>
       <td>
-        <a href="
+        <a
+          href={`https://normandy.cdn.mozilla.net/api/v3/recipe/${recipe.id}/history/?format=json`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           {recipe.id} - {recipe.currentRevision.name}
+        </a>
       </td>
       <td className="number">
         {bucketFilter.start}
