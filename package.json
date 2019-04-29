@@ -27,7 +27,8 @@
     "react-apollo": "^2.5.5",
     "react-apollo-hooks": "^0.4.5",
     "react-router-dom": "^5.0.0",
-    "use-query-params": "^0.3.2"
+    "use-query-params": "^0.3.2",
+    "interval-tree-type": "^1.0.1"
   },
   "license": "MIT",
   "browserslist": "last 2 firefox versions, last 2 chrome versions",

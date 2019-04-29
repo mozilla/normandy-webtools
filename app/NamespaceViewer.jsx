@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useQuery } from "react-apollo-hooks";
 import { useQueryParam, StringParam } from 'use-query-params';
+import IntervalTree from "interval-tree-type";
 
 import { namespaceRecipes as namespaceRecipesQuery } from "./graphql/namespaceRecipes.gql";
 
@@ -89,6 +90,7 @@ function NamespaceTable({ recipes }) {
   
   let expectedStart = 0;
   let expectedTotal = recipes.length > 0 ? getFilter(recipes[0], "bucketSample").total: 1000;
+  const takenBuckets = createIntervalTree([]);
   
   for (const recipe of recipes) {
     let bucketFilter = getFilter(recipe, "bucketSample");
@@ -107,6 +109,10 @@ function NamespaceTable({ recipes }) {
     if (bucketFilter.total != expectedTotal) {
       recipe._meta.totalMismatch = {expectedTotal};
     }
+    
+    recipe._meta.overlaps = [];
+    tree.queryInterval(bucketFilter.start, bucketFilter.start + bucketFilter.count, overlap => {
+      recipe._meta.overlaps.push(
     
     expectedStart = bucketFilter.start + bucketFilter.count;
     displayRows.push(<RecipeRow key={recipe.id} recipe={recipe} />);

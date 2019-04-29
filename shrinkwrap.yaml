@@ -11,6 +11,7 @@ dependencies:
   express: 4.16.4
   graphql: 14.2.1
   graphql-tag: 2.10.1
+  interval-tree-type: 1.0.1
   react: 16.8.6
   react-apollo: 2.5.5
   react-apollo-hooks: 0.4.5
@@ -2440,6 +2441,12 @@ packages:
       node: '>= 0.10'
     resolution:
       integrity: sha512-mT34yGKMNceBQUoVn7iCDKDntA7SC6gycMAWzGx1z/CMCTV7b2AAtXlo3nRyHZ1FelRkQbQjprHSYGwzLtkVbw==
+  /interval-tree-type/1.0.1:
+    dependencies:
+      sorted-array-type: 1.2.1
+    dev: false
+    resolution:
+      integrity: sha512-8+IvfEoQzDwz0ZfSGkqMotISJOxOxrim4TtxfPal0FG6k18gDCCH3GrKOgp0qSotiqPLLdOpRK3r+gyHITuPfA==
   /invariant/2.2.4:
     dependencies:
       loose-envify: 1.4.0
@@ -3917,6 +3924,10 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha512-FtyOnWN/wCHTVXOMwvSv26d+ko5vWlIDD6zoUJ7LW8vh+ZBC8QdljveRP+crNrtBwioEUWy/4dMtbBjA4ioNlg==
+  /sorted-array-type/1.2.1:
+    dev: false
+    resolution:
+      integrity: sha512-wRoVqMJ3BSANyHrKfDs3GpHaLm4DLNJdP4HQerrhQzprOUtFWCqETT/UFFh0rqdWCSJ/RA9QsWBsAtHHbrU4BA==
   /source-list-map/2.0.1:
     dev: false
     resolution:
@@ -4560,6 +4571,7 @@ specifiers:
   express: ^4.16.4
   graphql: ^14.2.1
   graphql-tag: ^2.10.1
+  interval-tree-type: ^1.0.1
   react: ^16.8.6
   react-apollo: ^2.5.5
   react-apollo-hooks: ^0.4.5
