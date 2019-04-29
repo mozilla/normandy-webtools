@@ -96,13 +96,12 @@ function NamespaceTable({ recipes }) {
     let bucketFilter = getFilter(recipe, "bucketSample");
     if (bucketFilter.start > expectedStart) {
       displayRows.push(
-        <tr className="namespace-gap" key={`gap-${expectedStart}`}>
-          <td>GAP</td>
-          <td className="number">{expectedStart}</td>
-          <td className="number">{bucketFilter.start - expectedStart}</td>
-          <td className="number">{expectedTotal}</td>
-          <td></td>
-        </tr>
+        <NamespaceGap
+          key={`gap-${expectedStart}`}
+          start={expectedStart}
+          count={bucketFilter.start - expectedStart}
+          total={expectedTotal}
+        />
       );
     }
     
@@ -125,14 +124,12 @@ function NamespaceTable({ recipes }) {
   
   if (expectedStart < expectedTotal) {
     displayRows.push(
-      <tr className="namespace-gap" key="gap-end">
-        <td>GAP</td>
-        <td className="number">{expectedStart}</td>
-        <td className="number">{expectedTotal - expectedStart}</td>
-        <td className="number">{expectedTotal}</td>
-        <td></td>
-        <td></td>
-      </tr>
+      <NamespaceGap
+        key={`gap-end`}
+        start={expectedStart}
+        count={expectedTotal - expectedStart}
+        total={expectedTotal}
+      />
     );
   }
   
@@ -144,7 +141,7 @@ function NamespaceTable({ recipes }) {
           <tr>
             <th>Recipe</th>
             <th className="number">First<br/>Bucket</th>
-            <th className="number">Number of<br/>Buckets</th>
+            <th className="number">Num. of<br/>Buckets</th>
             <th className="number">Total<br/>Buckets</th>
             <th>
               Other filters <br>
@@ -208,4 +205,17 @@ function RecipeRow({ recipe }) {
 
 function WarningIcon ({text}) {
   return <span className="warning-icon" title={text} />;
+}
+
+function NamespaceGap({ start, count, total }) {
+  return (
+    <tr className="namespace-gap" key="gap-end">
+      <td>GAP</td>
+      <td className="number">{start}</td>
+      <td className="number">{count}</td>
+      <td className="number">{total}</td>
+      <td></td>
+      <td></td>
+    </tr>
+  );
 }
