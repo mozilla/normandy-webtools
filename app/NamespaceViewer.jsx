@@ -143,9 +143,17 @@ function NamespaceTable({ recipes }) {
     for (const interval of takenBuckets.ascending()) {
       let potentialLow = interval.high + 1;
       let potentialHigh = potentialLow + newBucketSize - 1;
+      if (potentialHigh >= expectedTotal) {
+        continue;
+      }
+      console.log(`checking range [${potentialLow}, ${potentialHigh}]`);
       let collisions = Array.from(takenBuckets.queryInterval(potentialLow, potentialHigh));
       if (collisions.length == 0) {
-        newStart = potentialLow - 1;
+        newStart = potentialLow;
+        console.log(`Found range at ${newStart}`);
+        break;
+      } else {
+        console.log(`${collisions.length} collisions:`, collisions);
       }
     }
   }
@@ -157,13 +165,20 @@ function NamespaceTable({ recipes }) {
         Size of new bucket
         <input
           type="number"
-          value={newBucketSize}
-          onChange={ev => setNewBucketSize(ev.target.value)}
+          defaultValue={newBucketSize}
+          onChange={ev => {
+            const parsed = parseInt(ev.target.value);
+            if (!isNaN(parsed)) {
+              setNewBucketSize(parsed);
+            }
+          }}
         />
       </label>
       <div>
-        {newStart == null && "No slot found"}
-        {newStart && `Slot starting at ${newStart} is available`}
+        {newStart == null
+          ?  "No slot found"
+          : `Slot starting at ${newStart} is available`
+        }
       </div>
         
       <h2>{recipes.length} Existing Recipe{recipes.length != 1 ? "s" : ""}</h2>
