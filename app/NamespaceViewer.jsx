@@ -25,7 +25,6 @@ export default function NamespaceViewer() {
   let recipesByNamespace = new Map();
   
   let [selectedNamespace, setSelectedNamespace] = useQueryParam("namespace", StringParam);
-  let [newEntrySize, setNewEntrySize] = useState(10);
   
   if (!selectedNamespace) {
     selectedNamespace = "<empty>";
@@ -110,6 +109,15 @@ function NamespaceTable({ recipes }) {
       recipe._meta.totalMismatch = {expectedTotal};
     }
     
+    // the IntervalRange class assumes fully inclusive ranges, instead of Normandy's half-inclusive ranges. 
+    let intervalRange = [bucketFilter.start, bucketFilter.start + bucketFilter.count - 1];
+    recipe._meta.overlaps = [];
+    for (let overlap of takenBuckets.queryInterval(...intervalRange)) {
+      recipe._meta.overlaps.push(overlap.value);
+      overlap.value._meta.overlaps.push(recipe);
+    }
+    takenBuckets.insert(...intervalRange, recipe);
+    
     expectedStart = bucketFilter.start + bucketFilter.count;
     displayRows.push(<RecipeRow key={recipe.id} recipe={recipe} />);
   }
@@ -125,9 +133,22 @@ function NamespaceTable({ recipes }) {
     );
   }
   
+  const [newBucketSize, setNewBucketSize] = useState(10);
+  
   return (
     <>
-      <h2>{recipes.length} Recipe{recipes.length != 1 ? "s" : ""}</h2>
+      <h2>New Bucket Range</h2>
+      <label>
+        Size of new bucket
+        <input
+          type="number"
+          value={newBucketSize}
+          onChange={ev => setNewBucketSize(ev.target.value)}
+        />
+      </label>
+      {newBucketSize}
+        
+      <h2>{recipes.length} Existing Recipe{recipes.length != 1 ? "s" : ""}</h2>
       <table className="namespace-table">
         <thead>
           <tr>
@@ -189,7 +210,7 @@ function RecipeRow({ recipe }) {
       </td>
       <td className="overlaps">
         {recipe._meta.overlaps.length == 0 && "-"}
-        {recipe._meta.overlaps.map(overlappingRecipe => <span>{overlappingRecipe.id}, </span>)}
+        {recipe._meta.overlaps.map(overlappingRecipe => <span key={overlappingRecipe.id}>{overlappingRecipe.id}, </span>)}
       </td>
     </tr>
   );
