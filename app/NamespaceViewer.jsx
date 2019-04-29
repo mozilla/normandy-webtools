@@ -69,7 +69,7 @@ export default function NamespaceViewer() {
           {Array.from(recipesByNamespace.keys()).map(ns => <option key={ns} value={ns}>{ns}</option>)}
         </select>
       </h1>
-      <NamespaceTable recipes={namespaceRecipes} />
+      <NamespaceTable namespace={selectedNamespace} recipes={namespaceRecipes} />
     </div>
   );
 }
@@ -78,7 +78,7 @@ function getFilter(recipe, type) {
   return recipe.currentRevision.filterObject.find(f => f.type == type);
 }
 
-function NamespaceTable({ recipes }) {
+function NamespaceTable({ namespace, recipes }) {
   recipes = [...recipes];  
   recipes.sort((a, b) => {
     const filterA = getFilter(a, "bucketSample");
@@ -156,6 +156,9 @@ function NamespaceTable({ recipes }) {
     }
   }
   
+  const fraction = 10000 * newBucketSize / expectedTotal;
+  const approximate = Math.round(fraction) != fraction;
+  
   return (
     <>
       <h2>New Bucket Range</h2>
@@ -173,6 +176,9 @@ function NamespaceTable({ recipes }) {
         />
       </label>
       <div>
+        This is a{approximate ? "n approximately" : ""} {Math.round(fraction) / 100}% sample.
+      </div>
+      <div>
         {newStart == null
           ?  "No slot found"
           : <>
@@ -182,7 +188,9 @@ function NamespaceTable({ recipes }) {
               start: newStart,
               count: newBucketSize,
               total: expectedTotal,
-              input: ["normandy.userId", namespace],
+              input: (namespace && namespace != "<empty>")
+                ? ["normandy.userId", namespace]
+                : ["normandy.userId"],
             }, null, 4)}</code></pre>
           </>
         }
