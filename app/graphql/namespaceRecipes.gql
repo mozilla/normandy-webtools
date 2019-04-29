@@ -1,0 +1,21 @@
+query namespaceRecipes {
+  allRecipes {
+    id
+    approvedRevision {
+      ...revFields
+    }
+    latestRevision {
+      ...revFields
+    }
+  }
+}
+
+fragment revFields on RecipeRevisionType {
+  created
+  name
+  action {
+    name
+  }
+  extraFilterExpression
+  filterObjectJson
+}

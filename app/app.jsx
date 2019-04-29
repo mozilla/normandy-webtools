@@ -4,7 +4,7 @@ import { ApolloProvider } from 'react-apollo-hooks';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { QueryParamProvider } from 'use-query-params';
 
-import { client as graphqlClient } from "./graphql.js";
+import { client as graphqlClient } from "./graphql/index.js";
 import NamespaceViewer from "./NamespaceViewer.jsx";
 
 ReactDOM.render(

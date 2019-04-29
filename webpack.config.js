@@ -19,6 +19,11 @@ module.exports = {
         exclude: /node_modules/,
         include: path.join(__dirname, 'app'),
       },
+      {
+        test: /\.gql$/,
+        exclude: /node_modules/,
+        loader: 'graphql-tag/loader'
+      },
     ],
   },
   performance: {

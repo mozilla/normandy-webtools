@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useQuery } from "react-apollo-hooks";
 import { useQueryParam, StringParam } from 'use-query-params';
 
-import { GET_APPROVED_RECIPES } from "./graphql.js";
+import { namespaceRecipes as namespaceRecipesQuery } from "./graphql/namespaceRecipes.gql";
 
 function patchRevision(rev) {
   if (!rev) {
@@ -18,7 +18,7 @@ function patchRevision(rev) {
 }
 
 export default function NamespaceViewer() {
-  const { loading, error, data } = useQuery(GET_APPROVED_RECIPES);
+  const { loading, error, data } = useQuery(namespaceRecipesQuery);
   
   let recipes = null;
   let recipesByNamespace = new Map();
@@ -30,7 +30,6 @@ export default function NamespaceViewer() {
   }
   
   if (!error && !loading && data) {
-    console.log(data);
     recipes = data.allRecipes
       .map(r => {
         patchRevision(r.approvedRevision);
@@ -95,7 +94,7 @@ function NamespaceTable({ recipes }) {
     let bucketFilter = getFilter(recipe, "bucketSample");
     if (bucketFilter.start > expectedStart) {
       displayRows.push(
-        <tr className="namespace-gap">
+        <tr className="namespace-gap" key={`gap-${expectedStart}`}>
           <td>GAP</td>
           <td className="number">{expectedStart}</td>
           <td className="number">{bucketFilter.start - expectedStart}</td>
@@ -113,7 +112,17 @@ function NamespaceTable({ recipes }) {
     displayRows.push(<RecipeRow key={recipe.id} recipe={recipe} />);
   }
   
-  if )expectedStart < expectedTotal)
+  if (expectedStart < expectedTotal) {
+    displayRows.push(
+      <tr className="namespace-gap" key="gap-end">
+        <td>GAP</td>
+        <td className="number">{expectedStart}</td>
+        <td className="number">{expectedTotal - expectedStart}</td>
+        <td className="number">{expectedTotal}</td>
+        <td></td>
+      </tr>
+    );
+  }
   
   return (
     <>
