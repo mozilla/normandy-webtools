@@ -134,6 +134,21 @@ function NamespaceTable({ recipes }) {
   }
   
   const [newBucketSize, setNewBucketSize] = useState(10);
+  let newStart = null;
+  
+  let collisions = Array.from(takenBuckets.queryInterval(0, newBucketSize - 1));
+  if (collisions.length == 0) {
+    newStart = 0;
+  } else {
+    for (const interval of takenBuckets.ascending()) {
+      let potentialLow = interval.high + 1;
+      let potentialHigh = potentialLow + newBucketSize - 1;
+      let collisions = Array.from(takenBuckets.queryInterval(potentialLow, potentialHigh));
+      if (collisions.length == 0) {
+        newStart = potentialLow - 1;
+      }
+    }
+  }
   
   return (
     <>
@@ -146,7 +161,10 @@ function NamespaceTable({ recipes }) {
           onChange={ev => setNewBucketSize(ev.target.value)}
         />
       </label>
-      {newBucketSize}
+      <div>
+        {newStart == null && "No slot found"}
+        {newStart && `Slot starting at ${newStart} is available`}
+      </div>
         
       <h2>{recipes.length} Existing Recipe{recipes.length != 1 ? "s" : ""}</h2>
       <table className="namespace-table">
