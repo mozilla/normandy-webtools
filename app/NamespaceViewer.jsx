@@ -58,7 +58,12 @@ export default function NamespaceViewer() {
   }
   
   const namespaceRecipes = recipesByNamespace.get(selectedNamespace) || [];
-  console.log({selectedNamespace, recipesByNamespace});
+  
+  namespaceRecipes.sort((a, b) => {
+    const filterA = getFilter(a, "bucketSample");
+    const filterB = getFilter(b, "bucketSample");
+    return filterA.start - filterB.start;
+  });
   
   return (
     <div>
@@ -77,6 +82,7 @@ export default function NamespaceViewer() {
             <th className="number">First Bucket</th>
             <th className="number">Number of Buckets</th>
             <th className="number">Total Buckets</th>
+            <th>Other filters</th>
           </tr>
         </thead>
         <tbody>
@@ -107,6 +113,17 @@ function RecipeRow({ recipe }) {
       </td>
       <td className="number">
         {bucketFilter.total}
+      </td>
+      <td>
+        <ul className="filter-list">
+          {recipe.currentRevision.filterObject
+            .filter(filter => filter.type != "bucketSample")
+            .map((filter, idx) => <li key={idx} title={JSON.stringify(filter, null, 2)}>{filter.type}</li>)
+          }
+          {(recipe.currentRevision.extraFilterExpression || "").trim() !== ""
+            && <li key="extra" title={recipe.currentRevision.extraFilterExpression}>extra</li>
+          }
+        </ul>
       </td>
     </tr>
   );
