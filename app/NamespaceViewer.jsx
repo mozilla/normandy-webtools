@@ -25,6 +25,7 @@ export default function NamespaceViewer() {
   let recipesByNamespace = new Map();
   
   let [selectedNamespace, setSelectedNamespace] = useQueryParam("namespace", StringParam);
+  let [newEntrySize, setNewEntrySize] = useState(10);
   
   if (!selectedNamespace) {
     selectedNamespace = "<empty>";
@@ -108,15 +109,6 @@ function NamespaceTable({ recipes }) {
     if (bucketFilter.total != expectedTotal) {
       recipe._meta.totalMismatch = {expectedTotal};
     }
-    
-    // the IntervalRange class assumes fully inclusive ranges, instead of Normandy's half-inclusive ranges. 
-    let intervalRange = [bucketFilter.start, bucketFilter.start + bucketFilter.count - 1];
-    recipe._meta.overlaps = [];
-    for (let overlap of takenBuckets.queryInterval(...intervalRange)) {
-      recipe._meta.overlaps.push(overlap.value);
-      overlap.value._meta.overlaps.push(recipe);
-    }
-    takenBuckets.insert(...intervalRange, recipe);
     
     expectedStart = bucketFilter.start + bucketFilter.count;
     displayRows.push(<RecipeRow key={recipe.id} recipe={recipe} />);
