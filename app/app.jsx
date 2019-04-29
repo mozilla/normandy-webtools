@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { ApolloProvider } from 'react-apollo-hooks';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { QueryParamProvider } from 'use-query-params';
 
 import { client as graphqlClient } from "./graphql.js";
 import NamespaceViewer from "./NamespaceViewer.jsx";
@@ -9,9 +10,11 @@ import NamespaceViewer from "./NamespaceViewer.jsx";
 ReactDOM.render(
   <ApolloProvider client={graphqlClient}>
     <Router>
-      <Route path="/">
-        <NamespaceViewer />
-      </Route>
+      <QueryParamProvider ReactRouterRoute={Route}>
+        <Route path="/">
+          <NamespaceViewer />
+        </Route>
+      </QueryParamProvider>
     </Router>
   </ApolloProvider>,
   document.querySelector('#main'),

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useQuery } from "react-apollo-hooks";
+import { useQueryParam, StringParam } from 'use-query-params';
 
 import { GET_APPROVED_RECIPES } from "./graphql.js";
 
@@ -12,7 +13,7 @@ function patchRevision(rev) {
       rev.filterObject = JSON.parse(rev.filterObjectJson);
     }
   } catch (err) {
-    console.log("Warning: Revisiondoesn't have parsable filter object json", err, rev);
+    console.log("Warning: Revision doesn't have parsable filter object json", err, rev);
   }
 }
 
@@ -22,8 +23,11 @@ export default function NamespaceViewer() {
   let recipes = null;
   let recipesByNamespace = new Map();
   
-  const [selectedNamespace, setSelectedNamespace] = useState("<empty>");
-
+  let [selectedNamespace, setSelectedNamespace] = useQueryParam("namespace", StringParam);
+  
+  if (!selectedNamespace) {
+    selectedNamespace = "<empty>";
+  }
   
   if (!error && !loading && data) {
     console.log(data);
@@ -51,10 +55,6 @@ export default function NamespaceViewer() {
       }
       recipesByNamespace.get(namespace).push(recipe);
     }
-      
-    if (selectedNamespace && data && !recipesByNamespace.has(selectedNamespace)) {
-      //setSelectedNamespace(null);
-    }
   }
   
   const namespaceRecipes = recipesByNamespace.get(selectedNamespace) || [];
@@ -68,7 +68,7 @@ export default function NamespaceViewer() {
   return (
     <div>
       <h1>
-        Namespace
+        Bucket Namespace{" "}
         <select value={selectedNamespace} onChange={ev => setSelectedNamespace(ev.target.value)}>
           <option value={undefined} key="undefined">---</option>
           {Array.from(recipesByNamespace.keys()).map(ns => <option key={ns} value={ns}>{ns}</option>)}
@@ -82,7 +82,10 @@ export default function NamespaceViewer() {
             <th className="number">First Bucket</th>
             <th className="number">Number of Buckets</th>
             <th className="number">Total Buckets</th>
-            <th>Other filters</th>
+            <th>
+              Other filters <br>
+              </br><small>Hover for details</small>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -103,7 +106,8 @@ function RecipeRow({ recipe }) {
   return (
     <tr>
       <td>
-        {recipe.id} - {recipe.currentRevision.name}
+        <a href="
+          {recipe.id} - {recipe.currentRevision.name}
       </td>
       <td className="number">
         {bucketFilter.start}
