@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "react-apollo-hooks";
 
 import { GET_APPROVED_RECIPES } from "./graphql.js";
@@ -8,6 +8,9 @@ export default function NamespaceViewer() {
   
   let recipes = null;
   let recipesByNamespace = new Map();
+  
+  const [selectedNamespace, setSelectedNamespace] = useState();
+
   
   if (!error && !loading && data) {
     console.log(data);
@@ -26,26 +29,40 @@ export default function NamespaceViewer() {
       .filter(r => r.approvedRevision.filterObject && r.approvedRevision.filterObject.some(f => f.type == "bucketSample"))
     ;
     
-    
     for (const recipe of recipes) {
       const bucketSample = recipe.approvedRevision.filterObject.find(f => f.type == "bucketSample");
-      const namespace = bucketSample.input
+      let namespace = bucketSample.input
         .filter(i => i != "normandy.userId")
         .map(i => i == "normandy.recipe.id" ? recipe.id : i)
         .join("::");
+      if (namespace == "") {
+        namespace = "<empty>";
+      }
       if (!recipesByNamespace.has(namespace)) {
         recipesByNamespace.set(namespace, []);
       }
       recipesByNamespace.get(namespace).push(recipe);
     }
+      
+    if (selectedNamespace && data && !recipesByNamespace.has(selectedNamespace)) {
+      //setSelectedNamespace(null);
+    }
   }
   
+  const namespaceRecipes = recipesByNamespace.get(selectedNamespace) || [];
+  console.log(selectedNamespace
   
   return (
     <div>
-      <h1>Namespaces:</h1>
+      <h1>
+        Namespace
+        <select value={selectedNamespace}>
+          {Array.from(recipesByNamespace.keys()).map(ns => <option key={ns} value={ns}>{ns}</option>)}
+        </select>
+      </h1>
+      <h2>{namespaceRecipes.length} Recipe{namespaceRecipes.length != 1 ? "s" : ""}</h2>
       <ul>
-        {Array.from(recipesByNamespace.keys()).map(ns => <li>{ns}</li>)}
+        {namespaceRecipes.map(recipe => <li>{recipe.id} - {recipe.currentRevision.name}</li>)}
       </ul>
     </div>
   );
