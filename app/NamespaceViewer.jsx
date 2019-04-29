@@ -3,6 +3,19 @@ import { useQuery } from "react-apollo-hooks";
 
 import { GET_APPROVED_RECIPES } from "./graphql.js";
 
+function patchRevision(rev) {
+  if (!rev) {
+    return;
+  }
+  try {
+    if (rev.filterObjectJson) {
+      rev.filterObject = JSON.parse(rev.filterObjectJson);
+    }
+  } catch (err) {
+    console.log("Warning: Revisiondoesn't have parsable filter object json", err, rev);
+  }
+}
+
 export default function NamespaceViewer() {
   const { loading, error, data } = useQuery(GET_APPROVED_RECIPES);
   
@@ -15,18 +28,13 @@ export default function NamespaceViewer() {
   if (!error && !loading && data) {
     console.log(data);
     recipes = data.allRecipes
-      .filter(r => !!r.approvedRevision && r.approvedRevision.filterObjectJson)
       .map(r => {
-        try {
-          if (r.approvedRevision.filterObjectJson) {
-            r.approvedRevision.filterObject = JSON.parse(r.approvedRevision.filterObjectJson);
-          }
-        } catch (err) {
-          console.log("Warning: Recipe doesn't have parsable filter object json", err, r);
-        }
+        patchRevision(r.approvedRevision);
+        patchRevision(r.latestRevision);
+        r.currentRevision = r.approvedRevision || r.latestRevision;
         return r;
       })
-      .filter(r => r.approvedRevision.filterObject && r.approvedRevision.filterObject.some(f => f.type == "bucketSample"))
+      .filter(r => r.currentRevision.filterObject && getFilter(r, "bucketSample"))
     ;
     
     for (const recipe of recipes) {
@@ -66,13 +74,13 @@ export default function NamespaceViewer() {
         <thead>
           <tr>
             <th>Recipe</th>
-            <th>First Bucket</th>
-            <th>Number of Buckets</th>
-            <th>Total Buckets</th>
+            <th className="number">First Bucket</th>
+            <th className="number">Number of Buckets</th>
+            <th className="number">Total Buckets</th>
           </tr>
         </thead>
         <tbody>
-          {namespaceRecipes.map(recipe => <RecipeRow recipe={recipe} />)}
+          {namespaceRecipes.map(recipe => <RecipeRow key={recipe.id} recipe={recipe} />)}
         </tbody>
       </table>
     </div>
@@ -80,7 +88,7 @@ export default function NamespaceViewer() {
 }
 
 function getFilter(recipe, type) {
-  return recipe.approvedRevision.filterObject.find(f => f.type == type);
+  return recipe.currentRevision.filterObject.find(f => f.type == type);
 }
 
 function RecipeRow({ recipe }) {
@@ -89,15 +97,15 @@ function RecipeRow({ recipe }) {
   return (
     <tr>
       <td>
-        {recipe.id} - {recipe.approvedRevision.name}
+        {recipe.id} - {recipe.currentRevision.name}
       </td>
-      <td>
+      <td className="number">
         {bucketFilter.start}
       </td>
-      <td>
+      <td className="number">
         {bucketFilter.count}
       </td>
-      <td>
+      <td className="number">
         {bucketFilter.total}
       </td>
     </tr>
