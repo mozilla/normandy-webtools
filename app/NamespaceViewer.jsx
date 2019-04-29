@@ -92,7 +92,6 @@ function NamespaceTable({ recipes }) {
   
   for (const recipe of recipes) {
     let bucketFilter = getFilter(recipe, "bucketSample");
-    bucketFilter.total += Math.round(Math.random());
     if (bucketFilter.start > expectedStart) {
       displayRows.push(
         <tr className="namespace-gap" key={`gap-${expectedStart}`}>
@@ -171,7 +170,7 @@ function RecipeRow({ recipe }) {
       </td>
       <td className="number">
         {recipe._meta.totalMismatch &&
-          <WarningIcon text={`Unexpected bucket total. Got ${bucketFilter.total} expected ${recipe._meta.totalMismatch.expected}.`}/>
+          <WarningIcon text={`Unexpected bucket total. Got ${bucketFilter.total} expected ${recipe._meta.totalMismatch.expectedTotal}.`}/>
         }
         {bucketFilter.total}
       </td>
