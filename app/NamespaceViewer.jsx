@@ -9,7 +9,7 @@ export default function NamespaceViewer() {
   let recipes = null;
   let recipesByNamespace = new Map();
   
-  const [selectedNamespace, setSelectedNamespace] = useState();
+  const [selectedNamespace, setSelectedNamespace] = useState("<empty>");
 
   
   if (!error && !loading && data) {
@@ -62,18 +62,19 @@ export default function NamespaceViewer() {
         </select>
       </h1>
       <h2>{namespaceRecipes.length} Recipe{namespaceRecipes.length != 1 ? "s" : ""}</h2>
-      <table>
+      <table className="namespace-table">
         <thead>
-          <tr>ID</tr>
-          <tr>Name</tr>
-          <tr>First Bucket</tr>
-          <tr>Number of Buckets</tr>
-          <tr>Total Buckets</tr>
+          <tr>
+            <th>Recipe</th>
+            <th>First Bucket</th>
+            <th>Number of Buckets</th>
+            <th>Total Buckets</th>
+          </tr>
         </thead>
         <tbody>
           {namespaceRecipes.map(recipe => <RecipeRow recipe={recipe} />)}
         </tbody>
-      </ul>
+      </table>
     </div>
   );
 }
@@ -88,10 +89,7 @@ function RecipeRow({ recipe }) {
   return (
     <tr>
       <td>
-        {recipe.id}
-      </td>
-      <td>
-        {recipe.approvedRevision.name};
+        {recipe.id} - {recipe.approvedRevision.name}
       </td>
       <td>
         {bucketFilter.start}
@@ -102,6 +100,6 @@ function RecipeRow({ recipe }) {
       <td>
         {bucketFilter.total}
       </td>
-    </li>
+    </tr>
   );
 }
