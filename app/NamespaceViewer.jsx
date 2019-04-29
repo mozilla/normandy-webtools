@@ -90,7 +90,7 @@ function NamespaceTable({ recipes }) {
   
   let expectedStart = 0;
   let expectedTotal = recipes.length > 0 ? getFilter(recipes[0], "bucketSample").total: 1000;
-  const takenBuckets = createIntervalTree([]);
+  const takenBuckets = new IntervalTree();
   
   for (const recipe of recipes) {
     let bucketFilter = getFilter(recipe, "bucketSample");
@@ -110,9 +110,14 @@ function NamespaceTable({ recipes }) {
       recipe._meta.totalMismatch = {expectedTotal};
     }
     
+    // the IntervalRange class assumes fully inclusive ranges, instead of Normandy's half-inclusive ranges. 
+    let intervalRange = [bucketFilter.start, bucketFilter.start + bucketFilter.count - 1];
     recipe._meta.overlaps = [];
-    tree.queryInterval(bucketFilter.start, bucketFilter.start + bucketFilter.count, overlap => {
-      recipe._meta.overlaps.push(
+    for (let overlap of takenBuckets.queryInterval(...intervalRange)) {
+      recipe._meta.overlaps.push(overlap.value);
+      overlap.value._meta.overlaps.push(recipe);
+    }
+    takenBuckets.insert(...intervalRange, recipe);
     
     expectedStart = bucketFilter.start + bucketFilter.count;
     displayRows.push(<RecipeRow key={recipe.id} recipe={recipe} />);
@@ -126,6 +131,7 @@ function NamespaceTable({ recipes }) {
         <td className="number">{expectedTotal - expectedStart}</td>
         <td className="number">{expectedTotal}</td>
         <td></td>
+        <td></td>
       </tr>
     );
   }
@@ -137,13 +143,14 @@ function NamespaceTable({ recipes }) {
         <thead>
           <tr>
             <th>Recipe</th>
-            <th className="number">First Bucket</th>
-            <th className="number">Number of Buckets</th>
-            <th className="number">Total Buckets</th>
+            <th className="number">First<br/>Bucket</th>
+            <th className="number">Number of<br/>Buckets</th>
+            <th className="number">Total<br/>Buckets</th>
             <th>
               Other filters <br>
               </br><small>Hover for details</small>
             </th>
+            <th>Overlaps<br/>with</th>
           </tr>
         </thead>
         <tbody>
@@ -190,6 +197,10 @@ function RecipeRow({ recipe }) {
             && <li key="extra" title={recipe.currentRevision.extraFilterExpression}>extra</li>
           }
         </ul>
+      </td>
+      <td className="overlaps">
+        {recipe._meta.overlaps.length == 0 && "-"}
+        {recipe._meta.overlaps.map(overlappingRecipe => <span>{overlappingRecipe.id}, </span>)}
       </td>
     </tr>
   );
