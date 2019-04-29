@@ -26,27 +26,3 @@ export const client = new ApolloClient({
   ]),
   cache: new InMemoryCache()
 });
-
-export const GET_APPROVED_RECIPES = gql`
-  query namespaceRecipes {
-    allRecipes {
-      id
-      approvedRevision {
-        ...revFields
-      }
-      latestRevision {
-        ...revFields
-      }
-    }
-  }
-
-  fragment revFields on RecipeRevisionType {
-    created
-    name
-    action {
-      name
-    }
-    extraFilterExpression
-    filterObjectJson
-  }
-`;
