@@ -39,11 +39,11 @@ export default function NamespaceViewer() {
         r._meta = {};
         return r;
       })
-      .filter(r => r.currentRevision.filterObject && getFilter(r, "bucketSample"))
+      .filter(r => r.currentRevision.filterObject && getBucketSample(r))
     ;
     
     for (const recipe of recipes) {
-      const bucketSample = getFilter(recipe, "bucketSample");
+      const bucketSample = getBucketSample(recipe);
       let namespace = bucketSample.input
         .filter(i => i != "normandy.userId")
         .map(i => i == "normandy.recipe.id" ? recipe.id : i)
@@ -59,14 +59,27 @@ export default function NamespaceViewer() {
   }
   
   const namespaceRecipes = recipesByNamespace.get(selectedNamespace) || [];
-  
+  const namespaceNames = Array.from(recipesByNamespace.keys());
+  namespaceNames.sort((a, b) => {
+    if (a == "<empty>" && b != "<empty>") {
+      return -1;
+    } else if (a != "<empty>" && b == "<empty>") {
+      return 1;
+    } else if (a < b) {
+      return -1;
+    } else if (a > b) {
+      return 1;
+    } else {
+      return 0;
+    }
+  });
   return (
     <div>
       <h1>
         Bucket Namespace{" "}
         <select value={selectedNamespace} onChange={ev => setSelectedNamespace(ev.target.value)}>
           <option value={undefined} key="undefined">---</option>
-          {Array.from(recipesByNamespace.keys()).map(ns => <option key={ns} value={ns}>{ns}</option>)}
+          {namespaceNames.map(ns => <option key={ns} value={ns}>{ns}</option>)}
         </select>
       </h1>
       <NamespaceTable namespace={selectedNamespace} recipes={namespaceRecipes} />
@@ -78,22 +91,40 @@ function getFilter(recipe, type) {
   return recipe.currentRevision.filterObject.find(f => f.type == type);
 }
 
+function getBucketSample(recipe, expectedTotal=1000) {
+  let bucketSample = getFilter(recipe, "bucketSample");
+  if (!bucketSample) {
+    // translate stable samples into bucket samples
+    let stableSample = getFilter(recipe, "stableSample");
+    if (stableSample) {
+      bucketSample = {
+        type: "bucketSample",
+        start: 0,
+        total: expectedTotal,
+        count: stableSample.rate * expectedTotal,
+        input: stableSample.input,
+      };
+    }
+  }
+  return bucketSample;
+}
+
 function NamespaceTable({ namespace, recipes }) {
   recipes = [...recipes];  
   recipes.sort((a, b) => {
-    const filterA = getFilter(a, "bucketSample");
-    const filterB = getFilter(b, "bucketSample");
+    const filterA = getBucketSample(a);
+    const filterB = getBucketSample(b);
     return filterA.start - filterB.start;
   });
   
   let displayRows = [];
   
   let expectedStart = 0;
-  let expectedTotal = recipes.length > 0 ? getFilter(recipes[0], "bucketSample").total: 1000;
+  let expectedTotal = recipes.length > 0 ? getBucketSample(recipes[0]).total: 1000;
   const takenBuckets = new IntervalTree();
   
   for (const recipe of recipes) {
-    let bucketFilter = getFilter(recipe, "bucketSample");
+    let bucketFilter = getBucketSample(recipe);
     if (bucketFilter.start > expectedStart) {
       displayRows.push(
         <NamespaceGap
@@ -220,7 +251,7 @@ function NamespaceTable({ namespace, recipes }) {
 }
 
 function RecipeRow({ recipe }) {
-  let bucketFilter = getFilter(recipe, "bucketSample");
+  let bucketFilter = getBucketSample(recipe);
   
   return (
     <tr>
