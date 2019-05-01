@@ -22,6 +22,12 @@ export const client = new ApolloClient({
       headers: {
         "Content-Type": "text/plain",
       },
+      fetch: (uri, options) => {
+        const parsed = new URL(uri);
+        const cacheBust = Math.round(new Date() / 1000 / 60) * 60 * 1000; // 5 minute cachebust
+        parsed.searchParams.set("cachebust", cacheBust);
+        return fetch(parsed, options);
+      },
     }),
   ]),
   cache: new InMemoryCache()
