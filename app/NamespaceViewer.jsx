@@ -65,12 +65,8 @@ export default function NamespaceViewer() {
       return -1;
     } else if (a != "<empty>" && b == "<empty>") {
       return 1;
-    } else if (a < b) {
-      return -1;
-    } else if (a > b) {
-      return 1;
     } else {
-      return 0;
+      return recipesByNamespace.get(b).length - recipesByNamespace.get(a).length;
     }
   });
   return (
@@ -79,7 +75,11 @@ export default function NamespaceViewer() {
         Bucket Namespace{" "}
         <select value={selectedNamespace} onChange={ev => setSelectedNamespace(ev.target.value)}>
           <option value={undefined} key="undefined">---</option>
-          {namespaceNames.map(ns => <option key={ns} value={ns}>{ns}</option>)}
+          {namespaceNames.map(ns => (
+            <option key={ns} value={ns}>
+              {ns} - {recipesByNamespace.get(ns).length} recipes
+            </option>
+          ))}
         </select>
       </h1>
       <NamespaceTable namespace={selectedNamespace} recipes={namespaceRecipes} />
@@ -177,7 +177,6 @@ function NamespaceTable({ namespace, recipes }) {
       if (potentialHigh >= expectedTotal) {
         continue;
       }
-      console.log(`checking range [${potentialLow}, ${potentialHigh}]`);
       let collisions = Array.from(takenBuckets.queryInterval(potentialLow, potentialHigh));
       if (collisions.length == 0) {
         newStart = potentialLow;
