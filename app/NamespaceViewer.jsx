@@ -20,11 +20,10 @@ function patchRevision(rev) {
 
 export default function NamespaceViewer() {
   const { loading, error, data } = useQuery(namespaceRecipesQuery);
+  let [selectedNamespace, setSelectedNamespace] = useQueryParam("namespace", StringParam);
   
   let recipes = null;
   let recipesByNamespace = new Map();
-  
-  let [selectedNamespace, setSelectedNamespace] = useQueryParam("namespace", StringParam);
   
   if (!selectedNamespace) {
     selectedNamespace = "<empty>";
