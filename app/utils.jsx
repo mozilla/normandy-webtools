@@ -1,3 +1,5 @@
+import React from "react";
+
 export function WarningIcon ({text}) {
   return <span className="warning-icon" title={text} />;
 }

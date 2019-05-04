@@ -1,6 +1,8 @@
-import { getBucketSample } from "./utils.jsx";
+import React from "react";
 import IntervalTree from "interval-tree-type";
 import { useState } from "react";
+
+import { getBucketSample } from "./utils.jsx";
 
 export default function NamespaceTable({ namespace, recipes }) {
   recipes = [...recipes];  
