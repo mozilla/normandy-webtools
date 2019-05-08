@@ -150,6 +150,7 @@ function RecipeRow({ recipe }) {
   return (
     <tr>
       <td>
+        <RecipeEnabledState recipe={recipe} />
         <a
           href={`https://normandy.cdn.mozilla.net/api/v3/recipe/${recipe.id}/history/?format=json`}
           target="_blank"
@@ -204,4 +205,15 @@ function NamespaceGap({ start, count, total }) {
       <td></td>
     </tr>
   );
+}
+
+function RecipeEnabledState({ recipe }) {
+  const rev = recipe.currentRevision;
+  if (!rev.enabledState || !rev.enabledState.enabled) {
+    return <span>Disabled</span>;
+  }
+  if (rev.arguments.isEnrollmentPaused) {
+    return <span>Paused</span>;
+  }
+  return <span>Enabled</span>;
 }

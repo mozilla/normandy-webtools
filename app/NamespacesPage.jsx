@@ -18,6 +18,12 @@ function patchRevision(rev) {
   } catch (err) {
     console.log("Warning: Revision doesn't have parsable filter object json", err, rev);
   }
+  
+  try {
+    rev.arguments = JSON.parse(rev.argumentsJson);
+  } catch (err) {
+    console.log("Warning: Revision doesn't have parsable arguments json", err, rev);
+  }
 }
 
 export default function NamespaceViewer() {

@@ -18,4 +18,8 @@ fragment revFields on RecipeRevisionType {
   }
   extraFilterExpression
   filterObjectJson
+  argumentsJson
+  enabledState {
+    enabled
+  }
 }
