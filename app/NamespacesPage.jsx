@@ -5,7 +5,7 @@ import IntervalTree from "interval-tree-type";
 
 import { namespaceRecipes as namespaceRecipesQuery } from "./graphql/namespaceRecipes.gql";
 import NamespaceTable from "./NamespaceTable.jsx";
-import { getBucketFilter } from "./utils.jsx";
+import { getBucketSample } from "./utils.jsx";
 
 function patchRevision(rev) {
   if (!rev) {

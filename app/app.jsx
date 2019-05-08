@@ -12,7 +12,7 @@ ReactDOM.render(
     <Router>
       <QueryParamProvider ReactRouterRoute={Route}>
         <Route path="/">
-          <NamespaceViewer />
+          <NamespacesPage />
         </Route>
       </QueryParamProvider>
     </Router>
