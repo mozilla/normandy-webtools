@@ -74,6 +74,7 @@ export default function NamespaceViewer() {
     <div>
       <h1>
         Bucket Namespace{" "}
+        {!loading && !error && (
         <select value={selectedNamespace} onChange={ev => setSelectedNamespace(ev.target.value)}>
           <option value={undefined} key="undefined">---</option>
           {namespaceNames.map(ns => (
