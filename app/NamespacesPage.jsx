@@ -28,7 +28,7 @@ export default function NamespaceViewer() {
   let recipesByNamespace = new Map();
   
   if (!selectedNamespace) {
-    selectedNamespace = "<empty>";
+    selectedNamespace = '"global-v1"';
   }
   
   if (!error && !loading && data) {
@@ -70,11 +70,23 @@ export default function NamespaceViewer() {
       return recipesByNamespace.get(b).length - recipesByNamespace.get(a).length;
     }
   });
+  
+  if (loading) {
+    return <h1>Loading namespaces...</h1>;
+  }
+  if (error) {
+    return (
+      <div>
+        <h1>There was an error</h1>
+        {error.toString()}
+      </div>
+    );
+  }
+  
   return (
     <div>
       <h1>
         Bucket Namespace{" "}
-        {!loading && !error && (
         <select value={selectedNamespace} onChange={ev => setSelectedNamespace(ev.target.value)}>
           <option value={undefined} key="undefined">---</option>
           {namespaceNames.map(ns => (
