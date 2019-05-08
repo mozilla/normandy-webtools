@@ -210,10 +210,11 @@ function NamespaceGap({ start, count, total }) {
 function RecipeEnabledState({ recipe }) {
   const rev = recipe.currentRevision;
   if (!rev.enabledState || !rev.enabledState.enabled) {
-    return <span>Disabled</span>;
+    return <i className="icon icon-stop icon-red" />;
   }
   if (rev.arguments.isEnrollmentPaused) {
+    return <i className="icon icon-pause icon-yellow" />;
     return <span>Paused</span>;
   }
-  return <span>Enabled</span>;
+  return <i className="icon icon-play icon-green" />;
 }
