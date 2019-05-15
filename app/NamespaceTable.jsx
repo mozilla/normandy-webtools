@@ -126,8 +126,8 @@ export default function NamespaceTable({ namespace, recipes }) {
         <thead>
           <tr>
             <th>Recipe</th>
-            <th className="number">First<br/>Bucket</th>
             <th className="number">Num. of<br/>Buckets</th>
+            <th className="number">Bucket<br/>Range</th>
             <th className="number">Total<br/>Buckets</th>
             <th>
               Other filters <br>
@@ -160,10 +160,11 @@ function RecipeRow({ recipe }) {
         </a>
       </td>
       <td className="number">
-        {bucketFilter.start}
+        {bucketFilter.count}<br/>
+        <Percent count={bucketFilter.count} total={bucketFilter.total} />
       </td>
       <td className="number">
-        {bucketFilter.count}
+        {bucketFilter.start}–{bucketFilter.start + bucketFilter.count - 1}
       </td>
       <td className="number">
         {recipe._meta.totalMismatch &&
@@ -198,8 +199,8 @@ function NamespaceGap({ start, count, total }) {
   return (
     <tr className="namespace-gap" key="gap-end">
       <td>GAP</td>
-      <td className="number">{start}</td>
-      <td className="number">{count}</td>
+      <td className="number">{count} <Percent count={count} total={total}/></td>
+      <td className="number">{start}–{start + count - 1}</td>
       <td className="number">{total}</td>
       <td></td>
       <td></td>
@@ -217,4 +218,9 @@ function RecipeEnabledState({ recipe }) {
     return <span>Paused</span>;
   }
   return <i className="icon icon-play icon-green" />;
+}
+
+function Percent({ count, total }) {
+  const disp = Math.round(count / total * 10000) / 100;
+  return <small className="percent">{disp}%</small>
 }
