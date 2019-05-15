@@ -2,3 +2,48 @@ small.percent {
   font-size: 0.8em;
   font-style: italic;
 }
+
+.namespace-table {
+  border-collapse: collapse;
+}
+
+.namespace-table td,
+.namespace-table th {
+  border: 1px solid black;
+}
+
+.namespace-gap {
+  backgroud: #ccc;
+}
+
+.filter-list {
+  display: inline;
+  padding: 0;
+}
+
+.filter-list > li {
+  display: inline-block;
+  background: #ccc;
+  padding: 1px;
+  margin: 0 4px 4px 0;
+}
+
+.icon::before {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-right: 5px;
+  font-style: normal;
+}
+
+.icon-play::before {
+  content: ">";
+}
+
+.icon-pause::before {
+  content: "||";
+}
+
+.icon-stop::before {
+  content: "[]";
+}
