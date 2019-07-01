@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useQuery } from "react-apollo-hooks";
 import { useQueryParam, StringParam } from 'use-query-params';
-import IntervalTree from "interval-tree-type";
 
-import { namespaceRecipes as namespaceRecipesQuery } from "./graphql/namespaceRecipes.gql";
+import namespaceRecipesQuery from "./graphql/namespaceRecipes.graphql";
 import NamespaceTable from "./NamespaceTable.jsx";
 import { getBucketSample } from "./utils.jsx";
+
+console.log({ namespaceRecipesQuery });
 
 function patchRevision(rev) {
   if (!rev) {

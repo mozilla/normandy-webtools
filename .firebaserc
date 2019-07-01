@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "product-delivery-scratchpad": {
+      "hosting": {
+        "normandy-namespaces": [
+          "normandy-namespaces"
+        ]
+      }
+    }
+  }
+}
