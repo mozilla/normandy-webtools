@@ -10,6 +10,7 @@ export function getFilter(recipe, type) {
 
 export function getBucketSample(recipe, expectedTotal=1000) {
   let bucketSample = getFilter(recipe, "bucketSample");
+
   if (!bucketSample) {
     // translate stable samples into bucket samples
     let stableSample = getFilter(recipe, "stableSample");
@@ -21,6 +22,17 @@ export function getBucketSample(recipe, expectedTotal=1000) {
         count: stableSample.rate * expectedTotal,
         input: stableSample.input,
       };
+    }
+
+    let namespaceSample = getFilter(recipe, "namespaceSample");
+    if (namespaceSample) {
+      bucketSample = {
+        type: "bucketSample",
+        start: namespaceSample.start,
+        count: namespaceSample.count,
+        total: 10000,
+        input: ["normandy.userId", `"${namespaceSample.namespace}"`],
+      }
     }
   }
   return bucketSample;
