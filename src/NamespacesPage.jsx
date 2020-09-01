@@ -35,7 +35,7 @@ export default function NamespaceViewer() {
   let recipesByNamespace = new Map();
   
   if (!selectedNamespace) {
-    selectedNamespace = '"global-v1"';
+    selectedNamespace = '"global-v4"';
   }
   
   if (!error && !loading && data) {
